@@ -36,11 +36,18 @@ App = {
 
         $.getJSON("DappTokenSale.json", (register) => {
             const deployedNetwork = register.networks[id];
-            App.contracts.DappTokenSale = new web3.eth.Contract(register.abi, deployedNetwork.address);
+            App.contracts.DappTokenSale = new web3.eth.Contract(
+                register.abi,
+                deployedNetwork && deployedNetwork.address);
+
+            listenToEvents();
+
         }).done(() => {
             $.getJSON("DappToken.json", (dappToken) => {
                 const deployedNetwork = dappToken.networks[id];
-                App.contracts.DappToken = new web3.eth.Contract(dappToken.abi, deployedNetwork.address);
+                App.contracts.DappToken = new web3.eth.Contract(
+                    dappToken.abi,
+                    deployedNetwork && deployedNetwork.address);
                 return App.render();
             });
         })
@@ -95,15 +102,27 @@ App = {
                 value: numberOfTokens * App.tokenPrice,
                 gas: 500000
             })
-                .on('receipt', receipt => {
-                    console.warn('receipt 1', receipt)
-                    App.render()
-                });
+                .once('sending', (payload) => { console.log('sending', payload) })
+                .once('sent', (payload) => { console.log('sent', payload) })
+                .once('transactionHash', (hash) => { console.log('transactionHash', hash) })
+                .once('receipt', (receipt) => { console.log('receipt', receipt) })
+                .once('confirmation', (confNumber, receipt, latestBlockHash) => { console.log('confirmation', confNumber, receipt, latestBlockHash) })
+                .on('error', (error) => { console.error('error', error) })
+
         } catch (err) {
             console.error(err)
             App.render();
         }
     },
+}
+
+function listenToEvents() {
+    App.contracts.DappTokenSale.events.Sell({})
+        .on('data', async (event) => {
+            console.warn(event)
+            App.render();
+        })
+        .on('error', console.error);
 }
 
 // on change of networks, just reload recommended.
