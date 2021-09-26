@@ -7,7 +7,7 @@ App = {
     tokensSold: 0,
     tokensAvailable: 750000,
 
-    init: function () {
+    init: () => {
         return App.initWeb3();
     },
 
@@ -60,12 +60,9 @@ App = {
 
 
         // load account data
-        web3.eth.getCoinbase(function (err, account) {
-            if (err === null) {
-                App.account = account;
-                $('#accountAddress').html('Your account: ' + account);
-            }
-        })
+        var accounts = await web3.eth.getAccounts();
+        App.account = accounts[0]
+        $('#accountAddress').html('Your account: ' + App.account);
 
         tokenPrice = await App.contracts.DappTokenSale.methods.tokenPrice().call();
         App.tokenPrice = tokenPrice;
@@ -79,7 +76,6 @@ App = {
         $('#progress').css('width', progressPercent + '%');
 
         balance = await App.contracts.DappToken.methods.balanceOf(App.account).call()
-        console.warn(balance)
         $('.dapp-balance').html(balance);
         App.loading = false;
         loader.hide();
@@ -87,24 +83,26 @@ App = {
         return;
     },
 
-    buyTokens: function () {
-
+    buyTokens: async () => {
         $('#content').hide();
         $('#loader').show();
 
         var numberOfTokens = $('#numberOfTokens').val();
-        console.warn(numberOfTokens);
-        // return;
 
-        App.contracts.DappTokenSale.methods.buyTokens(numberOfTokens).send({
-            from: App.account,
-            value: numberOfTokens * App.tokenPrice,
-            gas: 500000
-        })
-            .on('receipt', receipt => {
-                console.log('receipt 1', receipt)
-                App.render()
-            });
+        try {
+            await App.contracts.DappTokenSale.methods.buyTokens(numberOfTokens).send({
+                from: App.account,
+                value: numberOfTokens * App.tokenPrice,
+                gas: 500000
+            })
+                .on('receipt', receipt => {
+                    console.warn('receipt 1', receipt)
+                    App.render()
+                });
+        } catch (err) {
+            console.error(err)
+            App.render();
+        }
     },
 }
 
@@ -114,8 +112,20 @@ function handleChainChanged(_chainId) {
     window.location.reload();
 }
 
+window.ethereum.on('accountsChanged', handleAccountsChanged);
+function handleAccountsChanged(accounts) {
+    console.warn(accounts)
+    if (accounts.length === 0) {
+        alert('Please connect to metamask.')
+        // MetaMask is locked or the user has not connected any accounts
+    } else {
+        App.account = accounts[0];
+        App.render();
+    }
+}
+
 $(function () {
-    $(window).load(function () {
+    $(window).load(() => {
         App.init();
     })
 })
