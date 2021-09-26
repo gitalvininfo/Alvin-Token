@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="css/bootstrap-min.css" rel="stylesheet">
+    <!-- <script src="https://www.unpkg.com/browse/web3@1.5.3/dist/web3.min.js"></script> -->
+
+</head>
+
+<body>
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+        <div class="row align-items-center g-lg-5 py-5">
+            <div class="col-lg-7 text-center text-lg-start">
+                <h1 class="display-4 fw-bold lh-1 mb-3">AL Token Sale</h1>
+                <p id="loader">
+                    loading...
+                </p>
+                <div id="content" style="display: none;">
+                    <p class="col-lg-10 fs-4">Introducing AL Token! Token price
+                        is <span class="token-price"></span> Ether. You currently have
+                        <span class="dapp-balance"></span> AL Token
+                    </p>
+
+                    <div class="progress">
+                        <div id="progress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                            aria-valuemax="100"></div>
+                    </div>
+
+                    <p class="col-lg-12 fs-5 text-center">
+                        <span class="tokens-sold"></span> /
+                        <span class="tokens-available"></span>
+                        tokens sold
+                    </p>
+                    <hr>
+                    <p class="col-lg-12 fs-5 text-center" id="accountAddress"></p>
+                </div>
+            </div>
+            <div class="col-md-10 mx-auto col-lg-5">
+                <form onSubmit="App.buyTokens(); return false;" role="form"
+                    class="p-4 p-md-5 border rounded-3 bg-light">
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="numberOfTokens" name="number"
+                            placeholder="Number of Token" value="1" min="1" pattern="[0-9]">
+                        <label for="floatingInput">Number of token</label>
+                    </div>
+
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">Buy Tokens</button>
+                    <hr class="my-4">
+                    <small class="text-muted">By clicking Sign up, you agree to the terms of use.</small>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.3/web3.min.js"></script>
+    <!-- <script src="js/web3.min.js"></script> -->
+    <!-- <script src="js/truffle-contract.min.js"></script> -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>
